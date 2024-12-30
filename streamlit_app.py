@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 import os
 import time
 import spacy
+import temp    file
 from groq import Groq
 from rouge_score import rouge_scorer
 
@@ -107,16 +108,21 @@ def display_pdf(uploaded_file):
     -------
     None
     """
-    # Read file as bytes:
-    bytes_data = uploaded_file.getvalue()
+if uploaded_file is not None:
+    # Save the uploaded PDF file temporarily
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+        tmp_file.write(uploaded_file.getvalue())
+        tmp_file_path = tmp_file.name  # Store the temporary file path
     
-    # Convert to Base64
-    base64_pdf = base64.b64encode(bytes_data).decode('utf-8')
+    # Generate the public URL for the file (In this case, using a local file path for the example)
+    # Ideally, you'd upload the file to a cloud service here to get a public URL
+    # For local testing, use the file path as the URL (this won't work in production)
+    pdf_url = f'file://{tmp_file_path}'  # For local testing only (this won't work in production)
+
+    # Display the PDF using an iframe
+    pdf_display = f'<iframe src="{pdf_url}" width="700" height="1000" type="application/pdf"></iframe>'
     
-    # Embed PDF in HTML
-    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
-    
-    # Display file
+    # Embed the PDF display in Streamlit using markdown
     st.markdown(pdf_display, unsafe_allow_html=True)
 
 def split_document(documents, chunk_size, chunk_overlap):    
